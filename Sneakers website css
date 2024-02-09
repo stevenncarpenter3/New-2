@@ -52,3 +52,32 @@ button {
 #cart-total {
     font-weight: bold;
 }
+
+// script.js
+let cartItems = [];
+let cartTotal = 0;
+
+function addToCart(productName, productPrice) {
+    cartItems.push({ name: productName, price: productPrice });
+    cartTotal += productPrice;
+    
+    updateCart();
+}
+
+function updateCart() {
+    const cartList = document.getElementById('cart-items');
+    const totalSpan = document.getElementById('cart-total');
+
+    // Clear previous items
+    cartList.innerHTML = '';
+
+    // Update cart items
+    cartItems.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${item.name} - $${item.price}`;
+        cartList.appendChild(listItem);
+    });
+
+    // Update total
+    totalSpan.textContent = cartTotal;
+}
