@@ -1,8 +1,27 @@
-/* styles.css */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sneaker Shop</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Sneaker Shop</h1>
+        <a href="/cart">View Cart</a>
+    </header>
+
+    <section id="products"></section>
+
+    <script src="script.js"></script>
+</body>
+</html>
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
 }
 
 header {
@@ -12,32 +31,44 @@ header {
     padding: 1em 0;
 }
 
+h1 {
+    margin: 0;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
 #products {
     display: flex;
-    justify-content: space-around;
     flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
 }
 
 .product {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
     text-align: center;
-    margin: 1em;
 }
 
 button {
     background-color: #333;
     color: #fff;
-    padding: 0.5em 1em;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
 }
 
 #cart {
-    background-color: #eee;
-    padding: 1em;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 20%;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
 }
 
 #cart-items {
@@ -46,22 +77,43 @@ button {
 }
 
 #cart-items li {
-    margin-bottom: 0.5em;
+    margin-bottom: 10px;
 }
 
 #cart-total {
     font-weight: bold;
 }
-
 // script.js
-let cartItems = [];
-let cartTotal = 0;
+const products = [
+    { id: 1, name: "Sneaker 1", price: 100 },
+    { id: 2, name: "Sneaker 2", price: 120 },
+    // Add more products as needed
+];
 
-function addToCart(productName, productPrice) {
-    cartItems.push({ name: productName, price: productPrice });
-    cartTotal += productPrice;
-    
-    updateCart();
+function renderProducts() {
+    const productsContainer = document.getElementById('products');
+
+    products.forEach(product => {
+        const productElement = document.createElement('div');
+        productElement.classList.add('product');
+        productElement.innerHTML = `
+            <img src="sneaker${product.id}.jpg" alt="${product.name}">
+            <h2>${product.name}</h2>
+            <p>$${product.price}</p>
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+        productsContainer.appendChild(productElement);
+    });
+}
+
+function addToCart(productId) {
+    const selectedProduct = products.find(product => product.id === productId);
+
+    if (selectedProduct) {
+        cartItems.push({ name: selectedProduct.name, price: selectedProduct.price });
+        cartTotal += selectedProduct.price;
+        updateCart();
+    }
 }
 
 function updateCart() {
@@ -81,3 +133,25 @@ function updateCart() {
     // Update total
     totalSpan.textContent = cartTotal;
 }
+
+// Initialize
+renderProducts();
+// server.js
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/cart', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'cart.html'));
+});
+
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
+});
